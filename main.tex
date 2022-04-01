@@ -54,16 +54,48 @@
 % \end{abstract}
 
 \section{Problem definition}
+Multimodal sentiment analysis is the task of performing sentiment analysis given multiple data sources (vision, audio, language).
+A good understanding of this task can help us better understand human social behavior and benefit human-computer interaction since human communication is multimodal and emotional.
+Latest Deep Learning techniques allow us using novel approaches to utilize these different types of signals into one model to form joint feature.  
+
 
 \section{Literature review}
 
 \section{Data}
 
+Considering that the multimodal model can perform sentiment analysis from different perspectives such as images, sounds, and texts, the following datasets will be more in line with the requirements of this paper.
+
+\subsection{CMU-MOSEI}
+CMU Multimodal Opinion Sentiment and Emotion Intensity (CMU-MOSEI) dataset is the largest dataset of multimodal sentiment analysis and emotion recognition to date. The dataset contains more than 23,500 sentence utterance videos from more than 1000 online YouTube speakers. The dataset is gender balanced. All the sentences utterance are randomly chosen from various topics and monologue videos. The videos are transcribed and properly punctuated.
+
+\subsection{CMU-MOSI}
+CMU-MOSI dataset is a collection of 2199 opinion video clips. Each opinion video is annotated with sentiment in the range [-3,3]. The dataset is rigorously annotated with labels for subjectivity, sentiment intensity, per-frame and per-opinion annotated visual features, and per-milliseconds annotated audio features.
+
 \section{Method}
+
+We want to use the graph convolutional network to handle the multimodal sentiment analysis task.
+
+Given the dataset $\chi = \{x_1,\cdots,x_n \}$, where $x_i$ is the input data which consists of three different modalities (visual, audio and language). We can use the neural network or manually defined rules to extract features. For example, we can extract facial action units from visual modality, we can extract MFCCs from audio modality and we can use glove word embedding to represent features extracted from the language modality.
+
+Let $Z = \{z_1,\cdots,z_n \}$ be the extracted features from the raw dataset $\chi$.
 
 \section{Results so far}
 
 \section{Plans to finish the project}
+
+Table \ref{plan} shows our plan to finish the project in the next few weeks.
+
+\begin{table}[]
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Time}       & \textbf{Works}               \\ \hline
+March 31 - April 10 & Build GCN Graph     \\ \hline
+April 11 - April 17 & GCN Training        \\ \hline
+April 18 - April 24 & Result Analysis     \\ \hline
+April 25 - April 28 & Finish Final Report \\ \hline
+\end{tabular}
+\caption{\label{plan} Plan to finish the project }
+\end{table}
 
 \cite{zadeh2018multimodal}
 \section{Team member contributions}
