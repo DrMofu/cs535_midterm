@@ -75,11 +75,60 @@ CMU-MOSI dataset is a collection of 2199 opinion video clips. Each opinion video
 
 We want to use the graph convolutional network to handle the multimodal sentiment analysis task.
 
-Given the dataset $\chi = \{x_1,\cdots,x_n \}$, where $x_i$ is the input data which consists of three different modalities (visual, audio and language). We can use the neural network or manually defined rules to extract features. For example, we can extract facial action units from visual modality, we can extract MFCCs from audio modality and we can use glove word embedding to represent features extracted from the language modality.
+\subsection{Preliminaries of the GCN}
 
-Let $Z = \{z_1,\cdots,z_n \}$ be the extracted features from the raw dataset $\chi$.
+Given the dataset $D = \{d_1,\cdots,d_n \}$, where $d_i$ is the input data which consists of three different modalities (visual, audio and language). We can use the neural network or manually defined rules to extract features. For example, we can extract facial action units from the visual modality, we can extract MFCCs from the audio modality and we can use glove word embedding to represent features extracted from the language modality.
+
+Let $X = \{x_1,\cdots,x_n \}$ be the extracted features from the raw dataset $D$. Given the extracted features $X$ , we can use an adjacency matrix $A$ to represent the relationship between data. $A_{ij}$ represent the relationship between data $d_i$ and data $d_j$. We can set $A_{ij} = N(x_i, x_j)$ if data $d_i$ and data $d_j$ have relationship. $N(\cdot,\cdot)$ is the function to calculate the similarity of two data given the features extracted from those two data. 
+
+Given the adjacency matrix $A$ and extracted features $X$, we can define a graph $G = (X, A)$. This graph is the key component of the GCN algorithm. Equation (\ref{eq1}) shows a simplified architecture of the GCN proposed by \cite{kipf2017semi}.
+
+\begin{equation}
+X^{(l+1)}=\sigma (LX^{(l)}W^{(l)})
+\label{eq1}
+\end{equation}
+
+In Equation (\ref{eq1}), $X^{(l)}$ is the features of the data in the $l$th layer of the network.
+When $l = 1$, $X^{(1)}$ is the features we extracted from the data. When $l>1$, $X^{(l)}$ is learned by the GCN.
+$W^{(l)}$ is a trainable weight of the $l$th layer of the graph convolution network.
+Matrix $L$ is the graph filter. $L$ is not a trainable variable, it represents property of the graph $G$. The definition of the graph filter $L$ varies, which can be different depending on the tasks. One standard definition of $L$ is let $L = A$. Therefore, the graph filter $L$ times features $X^{(l)}$ means the each nodes' features in $l+1$th layer are related to its neighbors' features in $l$th layer.
+
+In our method, we use Equation (\ref{eq2}) and (\ref{eq3}) to calculate the graph filter $L$.
+This method is proposed by \cite{kipf2017semi}. 
+The eigenvalues of $L$ calculated in this way are limited to (-1,1]. It can prevent the 
+gradient vanishes and gradient explodes problems in multi-layer GCN.
+
+\begin{equation}
+\bar{A}= A + I
+\label{eq2}
+\end{equation}
+
+\begin{equation}
+L_{ij}=\frac{\bar{A}_{ij}}{\sqrt{\sum_{m=1}^{n} \bar{A}_{im}}
+\sqrt{\sum_{m=1}^{n} \bar{A}_{mj}}} 
+\label{eq3}
+\end{equation}
+
+\subsection{Training}
+We first select some data $D_{sub}$, for example, 128 different videos, from the dataset $D$. Next, we can
+get the extracted features (such as facial action units, MFCCs, word embedding, etc.) $X_{sub}$ from those videos $D_{sub}$.
+
+We use function $N(\cdot,\cdot)$  to calculate the adjacency matrix $A$ and use Equation (\ref{eq2}) and (\ref{eq3}) to calculate the graph filter $L_{sub}$. We can build a multi-layer GCN according to Equation (\ref{eq1}). The input of the GCN is the data features $X_{sub}$ and the graph filter $L_{sub}$. In one round of training, the graph filter $L_{sub}$ in different GCN layers is the same. And $L_{sub}$ is different in different training round since $L_{sub}$ represents the relationship between data in $D_{sub}$.
+
+The output of the GCN is $X_{sub}^{l}$, which represents the relearned features of the data. We can use those features to further do classification or regression tasks. For example, we can simply use a full connection layer to predict the result.
+
+\subsection{Referencing}
+
+Given a video $d_{test}$ needed to be predicted, we can select several videos from the training set, and get the video set $D_{sub}$. The following part is the same as the training part. We extract $X_{sub}$, construct $L_{sub}$, use GCN to get the relearned features of $X_{sub}$, and use the relearned features to do the classification or regression tasks
+
 
 \section{Results so far}
+Currently, we have read some articles about the fusion method in multimodal sentiment analysis, and read a book about graph convolutional network \cite{hamilton2020graph}.
+
+We use the SDK provided by \cite{zadeh2018multimodal} to extract useful features from the videos.
+
+We followed the work \cite{delbrouck2020transformer} and established a transformer-based model, which can achieve 80.13 accuracy on CMU-MOSEI two classification task.
+
 
 \section{Plans to finish the project}
 
@@ -97,9 +146,13 @@ April 25 - April 28 & Finish Final Report \\ \hline
 \caption{\label{plan} Plan to finish the project }
 \end{table}
 
-\cite{zadeh2018multimodal}
 \section{Team member contributions}
 
+\quad Xinwei Du: Data exploration. Focusing on how to build a graph for GCN.
+
+Wanrong Zheng:  Implement the swin-transformer structure.
+
+Haoshen Wang: Established a baseline model.
 
 % include your own bib file like this:
 \bibliographystyle{acl}
